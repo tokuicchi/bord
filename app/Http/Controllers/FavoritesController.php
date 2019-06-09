@@ -41,27 +41,28 @@ class FavoritesController extends Controller
         $user = Auth::user();
         $favorite = Favorite::where('user_id',$user->id);
         $favorite->delete();
-
-        Log::debug($favorite);
-        Log::info($favorite);
-        // var_dump($favorite);
-        // logger($favorite);
-        // info($favorite);
-        // return redirect('/favorites');
+        return redirect('/favorites');
+        // var_dump($favorite); 
     }
 
     // お気に入り一覧
     public function index()
-    {
-        // $user = Auth::user();
-        // $favorites= Favorite::where('user_id', $user->id);
-        $favorites= Favorite::all();
-        return view('favorites.index',['favorites' => $favorites]);
+    {       
+        $favorites = Favorite::all();
+        $articles = Article::where('id',$favorites->article_id);
+        return view('favorites.index',['favorites' => $favorites],['articles' => $articles]);
     }
 
     public function show()
     {
-        $favorites= Favorite::all();
+        $favorites = Favorite::all();
         return view('favorites.index',['favorites' => $favorites]);
+    }
+
+    // 人気順に並べる
+    public function popularity(){
+        $favorites = Favorite::all();
+        $popularities = $favorites->sortByDesc('article_id');
+        return view('favorites.popularity',['popularities' => $popularities]);
     }
 }

@@ -11,14 +11,16 @@
 |
 */
 
+
 Route::get('/', function () {
     return view('welcome');
 });
 
-// Route::get('favorites/store', 'FavoritesController@create');
+// Route::patch('favorites/store', 'FavoritesController@create');
 // Route::delete('favorites/destroy', 'FavoritesController@destroy');
 // Route::get('favorites', 'FavoritesController@index');
 
+Route::get('popularity','FavoritesController@popularity')->name('popularity');
 Route::resource('favorites', 'FavoritesController');
 
 // Route::resource('favorites', 'FavoritesController',['only'=>['index','store', 'destroy']]);
