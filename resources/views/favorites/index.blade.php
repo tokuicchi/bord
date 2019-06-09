@@ -8,7 +8,7 @@
     @if( $favorites->count() > 0 )
         @foreach($favorites as $favorite )
             <h4>{{$favorite->article_id}}</h4>
-            <h4>{{$articles->title}}</h4>
+            {{--  <h4>{{$articles->title}}</h4>  --}}
             <h4>{{$favorite->user_id}}</h4>
             <hr>
         @endforeach
