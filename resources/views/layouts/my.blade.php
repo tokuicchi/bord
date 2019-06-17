@@ -66,20 +66,14 @@
         <body>
             <div class="wrapper">
                 @yield('content')
-                <footer id="sticky-footer" class="py-4 bg-dark text-white-50">
+                <footer id="sticky-footer" class="py-4 bg-dark text-white-50 fixed-bottom">
                     <div class="container text-center">
-                    <small>Copyright &copy; Yusuke Tokui</small>
+                        <small>Copyright &copy; Yusuke Tokui</small>
                     </div>
                 </footer>
             </div>
-        </body>
-       
-             
+        </body>   
     </div>
-
-    
-
-    <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}"></script>
 </body>
 </html>

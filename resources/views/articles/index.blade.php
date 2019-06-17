@@ -20,7 +20,7 @@
                 </tr>
             </thead>
             <tbody>
-            @foreach($articles as $article)
+            @foreach($articles as $key => $article )
                 <tr>
                     <td>{{$article->id}}</td>
                     <td class="thumbnail"><img src="/storage/image{{$article->photo}}" alt= "sample"></td>
@@ -34,17 +34,26 @@
                         {{--  お気に入りボタン  --}}
                         <div>
                         @if ( DB::table('favorites')->where([['article_id', $article->id],['user_id', $user->id]])->count() > 0)
-                            <form action="/favorites/{{$article->id}}" method="delete" enctype="multipart/form-data" >
-                                {{ csrf_field() }}
-                                <input type="hidden" name="article_id" value="{{$article->id}}">
-                                {{--  <input class="btn btn-danger" type="submit" value="お気に入り解除">  --}}
-                                <input class="btn btn-danger" type="submit" value="お気に入り解除" onclick="{{ $fav->destroy() }}" >
+                            <form action="{{ action('FavoritesController@destroy', $article->id) }}"   method="post" id="form_{{ $article->id }}" >
+                            {{ csrf_field() }}
+                            {{ method_field('delete') }}
+                            <a href="#" data-id="{{ $article->id }}" class="btn btn-danger" onclick="deletePost(this);">お気に入り解除</a>
                             </form>
+
+                            <script>
+                            function deletePost(e) {
+                            'use strict';
+                            if (confirm('本当に削除していいですか?')) {
+                            document.getElementById('form_' + e.dataset.id).submit();
+                            }
+                            }
+                            </script>
+
                         @else
                             <form action="/favorites/" method="post" enctype="multipart/form-data" >
                                 {{ csrf_field() }}
                                 <input type="hidden" name="article_id" value="{{$article->id}}">
-                                <input class="btn btn-primary" type="submit" value="お気に入り登録">
+                                <input class="btn btn-primary" name="create" type="submit" value="お気に入り登録">
                             </form>
                         @endif
                         </div>
@@ -55,4 +64,3 @@
         </table>
     </div>
 @endsection
-

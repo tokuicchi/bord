@@ -7,6 +7,7 @@ use App\Article;
 use App\Favorite;
 use App\User;
 use Auth;
+use DB;
 use Illuminate\Support\Facades\Log;
 
 class FavoritesController extends Controller
@@ -14,43 +15,54 @@ class FavoritesController extends Controller
     //お気に入り登録
     public function store(Request $request)
     {
-        $user = Auth::user();
-        $favorite = new Favorite;
-        $favorite->user_id = $user->id;
-        $favorite->article_id = $request->article_id;
-        // $favorites->article_title = $request->article_title;
-        // $favorites->article_photo = $request->article_photo;
-        // if ($favorites->article_id > 0) {
-        //     $favorites->save();
-        //     return redirect('/favorites/index')->with('success', 'お気に入り登録しました');
-        // } else {
-        //     return redirect()
-        //         ->back()
-        //         ->withInput()
-        //         ->withErrors(['article_id' => 'お気に入り登録されています']);
-        // }
-        $favorite->save();
-        $favorite = $user->favorites();
-        // return view('favorites.index', ['favorite' => $favorite]);
-        return redirect('/favorites');
-
+        if(isset($_POST['create']))
+        {
+            $user = Auth::user();
+            $favorite = new Favorite;
+            $favorite->user_id = $user->id;
+            $favorite->article_id = $request->article_id;
+            // $favorites->article_title = $request->article_title;
+            // if ($favorites->article_id > 0) {
+            //     $favorites->save();
+            //     return redirect('/favorites/index')->with('success', 'お気に入り登録しました');
+            // } else {
+            //     return redirect()
+            //         ->back()
+            //         ->withInput()
+            //         ->withErrors(['article_id' => 'お気に入り登録されています']);
+            // }
+            $favorite->save();
+            $favorite = $user->favorites();
+            return redirect('/favorites');
+        }
     }
     // お気に入り解除
-    public function destroy()
+    public function destroy($id)
     {
-        $user = Auth::user();
-        $favorite = Favorite::where('user_id',$user->id);
-        $favorite->delete();
-        return redirect('/favorites');
-        // var_dump($favorite); 
+        // logger($_SERVER['REQUEST_METHOD']);
+        // if(isset($_GET['remove']))
+        // {
+            logger('destroy');
+            $user = Auth::user();
+            $favorite = Favorite::where([['article_id', $id],['user_id', $user->id]]);
+            $favorite->delete();
+            return redirect('/favorites');
+        // }else
+        // {
+            // echo phpinfo();
+            // logger(array_keys($_GET));
+            // logger('Cannot destroy');
+        // }
     }
 
     // お気に入り一覧
     public function index()
-    {       
+    {    
+        $user = Auth::user();   
         $favorites = Favorite::all();
-        $articles = Article::where('id',$favorites->article_id);
-        return view('favorites.index',['favorites' => $favorites],['articles' => $articles]);
+        $favorites = $favorites->where('user_id', $user->id);
+        Log::debug($favorites);
+        return view('favorites.index',['favorites' => $favorites]);
     }
 
     public function show()
@@ -60,9 +72,12 @@ class FavoritesController extends Controller
     }
 
     // 人気順に並べる
-    public function popularity(){
-        $favorites = Favorite::all();
-        $popularities = $favorites->sortByDesc('article_id');
+    public function popularity()
+    {
+        // $favorites = Favorite::all();
+        $popularities = \DB::table('favorites')->groupBy('article_id')->orderBy(\DB::raw('count(article_id)'), 'DESC')->get();
+        $popularities = Favorite::groupBy('article_id')->orderBy(\DB::raw('count(article_id)'), 'DESC')->get();
+        logger($popularities);
         return view('favorites.popularity',['popularities' => $popularities]);
     }
 }
