@@ -247,6 +247,7 @@ return [
     //'log' => env('APP_LOG', 'single'),
     'log' => env('APP_LOG', 'daily'),
     'log' => 'daily',
+    'log' => env('LOG_OUTPUT', 'errorlog'),
     // dailyログの場合の保存期間を指定
     'log_max_files' => '10',
 
